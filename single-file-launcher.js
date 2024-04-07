@@ -30,6 +30,11 @@ const { readTextFile, exit, addSignalListener } = Deno;
 
 addSignalListener("SIGTERM", closeBrowserAndExit);
 addSignalListener("SIGINT", closeBrowserAndExit);
+process.once("uncaughtException", async (error) => {
+	console.error(error.message || error); // eslint-disable-line no-console
+	await closeBrowser();
+	exit(-1);
+});
 
 export { run };
 
@@ -81,6 +86,7 @@ async function run() {
 		await singlefile.finish();
 	} catch (error) {
 		console.error(error.message || error); // eslint-disable-line no-console
+		await closeBrowser();
 		exit(-1);
 	}
 }
